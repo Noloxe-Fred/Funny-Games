@@ -25,7 +25,7 @@ const NB_MANCHES_PAR_CYCLE = 10;
 const ROLES_AUTORISES_LABEL = 'rôle Modérateur Quiz';
 
 function rolesAutorises() {
-  return [config.roles.adminId, config.roles.quizModeratorId];
+  return [config.roles.adminId, config.roles.moderatorId];
 }
 
 // --- Utilitaires internes -----------------------------------------------

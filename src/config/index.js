@@ -29,7 +29,7 @@ const OPTIONAL = [
   'PURGE_ROLE_ID',
   'ADMIN_ROLE_ID',
   // --- Quiz (module réintroduit : /quiz-affiche-floutee) ---
-  'QUIZ_MOD_ROLE_ID',
+  'MOD_ROLE_ID',
   'QUIZ_CHANNEL_ID',
   'QUIZ_RESPONSE_CHANNEL_ID',
   'QUIZ_ROLE_JOUONS_A_UN_JEU_ID',
@@ -73,7 +73,8 @@ module.exports = {
   roles: {
     purgeId: process.env.PURGE_ROLE_ID || null,
     adminId: process.env.ADMIN_ROLE_ID || null,
-    quizModeratorId: process.env.QUIZ_MOD_ROLE_ID || null,
+    // Rôle Modération (généraliste : quiz, programme ciné, etc.)
+    moderatorId: process.env.MOD_ROLE_ID || null,
     // Rôle "Jouons à un jeu" — mentionné au lancement de chaque nouvelle
     // manche de quiz (palier 1 uniquement, pas à chaque palier suivant,
     // pour ne pas spammer les abonnés tous les 2 jours sur la même manche).
@@ -90,7 +91,7 @@ module.exports = {
 
   messages: {
     purgeKick:
-      `Le serveur Discord horrifique Horror Humanum Est a lancé sa purge de membres inactifs. ` +
+      `Le serveur Discord horrifique Funny Games a lancé sa purge de membres inactifs. ` +
       `Comme vous n'avez pas mentionné vouloir rester sur le serveur, vous avez été exclu.\n\n` +
       `Cette exclusion n'est pas définitive du tout, ou s'il s'agit d'une erreur, vous pouvez à ` +
       `tout moment revenir parler horreur avec nous en utilisant le lien suivant : ` +

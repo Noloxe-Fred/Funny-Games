@@ -21,25 +21,22 @@ async function requireAdmin(interaction) {
 }
 
 /**
- * Vérifie que l'utilisateur possède le rôle streamer Séances Ciné
- * (CINE_CLUB_STREAMER_ROLE_ID). Générique : sur le même modèle que
- * requireAdmin, mais pensé pour être réutilisable si d'autres modules ont
- * besoin d'un rôle "responsable" dédié plus tard.
+ * Vérifie que l'utilisateur peut lancer une commande streamer (Séances Ciné,
+ * /stream) : tout membre ayant la permission Administrateur (via n'importe
+ * lequel de ses rôles) est toujours autorisé, ainsi que le rôle streamer
+ * dédié (CINE_CLUB_STREAMER_ROLE_ID) s'il est configuré. Sans rôle
+ * streamer configuré, ces commandes sont réservées aux administrateurs.
  */
 async function requireStreamerRole(interaction) {
+  if (isAdmin(interaction)) return true;
+
   const roleId = config.cineClub.streamerRoleId;
 
-  if (!roleId) {
+  if (!roleId || !interaction.member.roles.cache.has(roleId)) {
     await interaction.reply({
-      content: '❌ CINE_CLUB_STREAMER_ROLE_ID non configuré — commande indisponible.',
-      ephemeral: true,
-    });
-    return false;
-  }
-
-  if (!interaction.member.roles.cache.has(roleId)) {
-    await interaction.reply({
-      content: '❌ Cette commande est réservée au rôle streamer des Séances Ciné.',
+      content: roleId
+        ? '❌ Cette commande est réservée aux administrateurs et au rôle streamer.'
+        : '❌ Cette commande est réservée aux administrateurs.',
       ephemeral: true,
     });
     return false;

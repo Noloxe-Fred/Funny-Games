@@ -1,7 +1,7 @@
-# Horror Botum Est v2 — contexte projet
+# Funny Games v2 — contexte projet
 
-Bot Discord (discord.js v14, CommonJS, Node >=18) pour le serveur "Horror
-Humanum Est". Refonte v2 architecturée par fonctionnalité. **Le README.md
+Bot Discord (discord.js v14, CommonJS, Node >=18) pour le serveur "Funny
+Games". Refonte v2 architecturée par fonctionnalité. **Le README.md
 est la doc de référence** (architecture, conventions, détail de chaque
 fonctionnalité) — le lire avant toute modification structurelle. Ce fichier
 ne fait que résumer l'essentiel pour éviter de re-explorer tout le repo.

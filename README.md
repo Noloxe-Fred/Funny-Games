@@ -1,6 +1,6 @@
-# Horror Botum Est — v2
+# Funny Games — v2
 
-Refonte du bot Discord du serveur Horror Humanum Est.
+Refonte du bot Discord du serveur Funny Games.
 
 ## Installation
 
@@ -120,7 +120,7 @@ pas `le mot interdit`) pour rester compatible partout (shell, CLI, etc.).
 
 ## Quiz Affiche Floutée
 
-- `/quiz-affiche-floutee` (réservé à `ADMIN_ROLE_ID` ou `QUIZ_MOD_ROLE_ID`) tire
+- `/quiz-affiche-floutee` (réservé à `ADMIN_ROLE_ID` ou `MOD_ROLE_ID`) tire
   un film d'horreur au hasard sur TMDB (genre Horreur, note ≥ 5/10, sorti
   entre 1920 et aujourd'hui) et poste son affiche très pixélisée dans
   `QUIZ_CHANNEL_ID`, avec un bouton **Répondre** qui ouvre une fenêtre modale
@@ -168,7 +168,7 @@ pas `le mot interdit`) pour rester compatible partout (shell, CLI, etc.).
   réduit les images dans le salon ; reposté si besoin pour rester en bas).
   Le rappel hebdomadaire garde l'ancien découpage (4 séances sur la
   première image, 5 par image suivante) dans une seule galerie.
-- `/programme-cine` (Admin ou rôle Modo `QUIZ_MOD_ROLE_ID`) supprime les anciennes images
+- `/programme-cine` (Admin ou rôle Modo `MOD_ROLE_ID`) supprime les anciennes images
   et republie le programme. À lancer la première fois (la mise à jour
   automatique reste inactive tant qu'elle n'a jamais été lancée) ou en cas
   de bug.
@@ -267,17 +267,17 @@ galerie**.
 
 ## Stream jeux vidéo
 
-Annonce un stream sur [la chaîne Twitch](https://www.twitch.tv/horror_humanum_est),
+Annonce un stream sur [la chaîne Twitch](https://www.twitch.tv/funny_games_discord),
 sur le modèle de la branche « Séance Libre » de `/cine`.
 
-- `/stream jeu` (rôle streamer, depuis n'importe quel salon) : recherche du
+- `/stream jeu` (admin ou rôle streamer, depuis n'importe quel salon) : recherche du
   jeu, choix du jeu, du jour (3 prochaines semaines), de l'heure (20h30 par
   défaut) et du message. Publie une carte Components V2 dans `STREAM_CHANNEL_ID`
   en mentionnant `STREAM_ROLE_ID`, avec lien Twitch, bouton « Je serai présent »,
   fiche du jeu, lien et démarrage de l'event.
 - **Event Discord externe** de 3 h dont le lieu est la chaîne Twitch (pas de salon vocal).
 - **Rappel H-1** avec mention du rôle, envoyé par le scheduler de `cine-club`.
-- `/supprimer-stream` (rôle streamer) : retire annonce, event, rappel, présences
+- `/supprimer-stream` (admin ou rôle streamer) : retire annonce, event, rappel, présences
   et place au programme.
 - **Programme en image** : les streams y figurent aux côtés des séances, triés
   par date, avec l'étiquette « Jeu vidéo », y compris dans le rappel du dimanche.

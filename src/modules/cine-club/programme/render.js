@@ -144,7 +144,7 @@ function dessinerEntete(ctx) {
 
   ctx.font = '22px "Special Elite"';
   ctx.fillStyle = COULEURS.moutarde;
-  texteEspace(ctx, 'HORROR HUMANUM EST PRÉSENTE', LARGEUR / 2, BANDE_H + 44 + 22, 6, 'center');
+  texteEspace(ctx, 'FUNNY GAMES PRÉSENTE', LARGEUR / 2, BANDE_H + 44 + 22, 6, 'center');
 
   // Titre dégoulinant + ombre portée dure
   ctx.font = '150px Creepster';

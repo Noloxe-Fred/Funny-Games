@@ -10,7 +10,7 @@ module.exports = {
     .setDescription('(Re)publie le programme en image des Séances Ciné dans le salon dédié'),
 
   execute: withErrorHandling(async (interaction) => {
-    const autorise = await requireAnyRole(interaction, [config.roles.adminId, config.roles.quizModeratorId], {
+    const autorise = await requireAnyRole(interaction, [config.roles.adminId, config.roles.moderatorId], {
       label: 'un modérateur',
     });
     if (!autorise) return;

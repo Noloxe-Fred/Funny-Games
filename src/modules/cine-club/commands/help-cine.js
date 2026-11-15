@@ -28,7 +28,7 @@ const COMMANDES = [
   },
   {
     nom: '/cine',
-    acces: 'Rôle streamer, salon Séances Ciné uniquement',
+    acces: 'Admin ou rôle streamer, salon Séances Ciné uniquement',
     description:
       'Point d\'entrée unique pour organiser une séance, avec 3 branches qui publient directement : Séances Séries ' +
       '(recherche TMDB, choix de la saison et des épisodes diffusés, jour au choix sur les 3 prochaines semaines, heure libre), ' +
@@ -36,7 +36,7 @@ const COMMANDES = [
   },
   {
     nom: '/supprimer-seance',
-    acces: 'Rôle streamer',
+    acces: 'Admin ou rôle streamer',
     description:
       'Supprime une séance à venir, quelle que soit sa branche : annonce, évènement Discord, rappels, ' +
       'présences, historique, et la retire du programme en image.',
@@ -66,8 +66,8 @@ module.exports = {
     container.addTextDisplayComponents((t) =>
       t.setContent(
         '# 🎬 Commandes des Séances Ciné\n' +
-          'Watchlist ouverte à tout le monde. `/cine` est réservée au rôle streamer ' +
-          'et au salon Séances Ciné dédié.'
+          'Watchlist ouverte à tout le monde. `/cine` est réservée aux admins et au rôle streamer, ' +
+          'dans le salon Séances Ciné dédié.'
       )
     );
 

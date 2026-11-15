@@ -14,7 +14,7 @@ const { attendreClic } = require('../cine-club/service');
 const { formatDateFr } = require('../cine-club/dateUtils');
 const store = require('./store');
 
-const TWITCH_URL = 'https://www.twitch.tv/horror_humanum_est';
+const TWITCH_URL = 'https://www.twitch.tv/funny_games_discord';
 const COULEUR_STREAM = 0x9146ff; // violet Twitch
 const MAX_DESCRIPTION = 1000; // les résumés IGDB peuvent être très longs
 const MAX_NOMS_AFFICHES = 25;
