@@ -200,7 +200,7 @@ function buildSeanceContainer({
   ];
 
   // Boutons liés à l'event Discord natif — seulement si la création a
-  // réussi (best-effort, voir host.js/arrache.js). Pas d'event => pas de
+  // réussi (best-effort, voir wizards/). Pas d'event => pas de
   // lien ni de bouton "Démarrer", pour ne jamais afficher un lien mort.
   if (guildId && eventId) {
     boutons.push(
@@ -569,7 +569,7 @@ async function demanderJour(interaction, message) {
 
 /**
  * Demande un titre libre via modale (recherche TMDB) — utilisé par les
- * branches "Séance à l'arrache" et "Séance Libre". `clicBouton` est
+ * branche "Séance Libre". `clicBouton` est
  * l'interaction du bouton qui déclenche l'ouverture de la modale (une
  * modale doit être la toute première réponse à son interaction).
  *
@@ -623,19 +623,6 @@ function doublonWatchlist(fiche) {
  */
 function doublonHistorique(fiche) {
   return store.findInHistorique(fiche.tmdbId, fiche.mediaType);
-}
-
-/**
- * Libellés -> IDs de rôle configurés pour le type de séance film.
- */
-const TYPES_SEANCE_FILM = [
-  { id: 'seancesCine', label: 'Séances Cinés' },
-  { id: 'cineClassiques', label: 'Ciné Classiques' },
-  { id: 'courtsMetrages', label: 'Courts Métrages' },
-];
-
-function roleIdPourTypeSeance(typeSeanceId) {
-  return config.cineClub.roles[typeSeanceId] || null;
 }
 
 /**
@@ -827,8 +814,6 @@ module.exports = {
   choisirResultatTmdb,
   doublonWatchlist,
   doublonHistorique,
-  TYPES_SEANCE_FILM,
-  roleIdPourTypeSeance,
   programmerRappels,
   demarrerSchedulerRappels,
   handlePresenceButton,

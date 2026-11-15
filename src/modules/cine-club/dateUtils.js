@@ -25,15 +25,6 @@ function parseHeure(input) {
 }
 
 /**
- * Heure choisie le jour même de `from` (utilisé par la séance "à l'arrache").
- * Si `from` est déjà après cette heure, on garde quand même le jour même
- * (séance à l'arrache = ce soir).
- */
-function ceSoirA(heure, minute = 0, from = new Date()) {
-  return atHeure(from, heure, minute);
-}
-
-/**
  * Les `nb` prochains jours calendaires à partir d'aujourd'hui (00:00), pour le
  * choix de date des séances (voir service.demanderJour). setDate() plutôt
  * que + n jours en millisecondes pour rester juste lors des changements
@@ -75,7 +66,6 @@ function formatDateFr(date) {
 module.exports = {
   parseHeure,
   atHeure,
-  ceSoirA,
   prochainsJours,
   formatJourFr,
   formatDateFr,

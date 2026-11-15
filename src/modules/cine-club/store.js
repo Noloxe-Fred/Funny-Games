@@ -7,6 +7,7 @@ const NS_ANNONCES = 'cine-club-annonces';
 const NS_PRESENCES = 'cine-club-presences';
 const NS_PROGRAMME = 'cine-club-programme';
 const NS_RAPPEL_HEBDO = 'cine-club-rappel-hebdo';
+const NS_VOTES = 'cine-club-votes';
 
 function cle(tmdbId, mediaType) {
   return `${mediaType}:${tmdbId}`;
@@ -130,7 +131,7 @@ function supprimerRappelsSeance(sessionKey, dateSeance) {
   return retires;
 }
 
-// --- Annonces (séances /host et /arrache) --------------------------------
+// --- Annonces (séances de /cine) --------------------------------
 //
 // Garde les données nécessaires pour reconstruire la carte Components V2
 // d'une annonce quand quelqu'un clique sur "Je serai présent" ou "Démarrer
@@ -255,6 +256,39 @@ function getPresenceList(sessionKey) {
   return Object.values(entry.users).sort((a, b) => a.localeCompare(b));
 }
 
+// --- Votes des Séances programmées ----------------------------------------
+//
+// Un vote = les sondages (jours / horaires / films) publiés par la branche
+// "Séances programmées" de /cine, en attente de clôture (bouton ou fin des
+// votes). Persisté pour que la clôture automatique survive à un restart.
+
+function getVotes() {
+  return jsonStore.read(NS_VOTES, {});
+}
+
+function setVote(id, vote) {
+  const all = getVotes();
+  all[id] = vote;
+  jsonStore.write(NS_VOTES, all);
+  return vote;
+}
+
+function getVote(id) {
+  return getVotes()[id] || null;
+}
+
+function majVote(id, patch) {
+  const all = getVotes();
+  if (!all[id]) return null;
+  all[id] = { ...all[id], ...patch };
+  jsonStore.write(NS_VOTES, all);
+  return all[id];
+}
+
+function listVotesOuverts() {
+  return Object.values(getVotes()).filter((v) => v.statut === 'ouvert');
+}
+
 module.exports = {
   // watchlist
   findInWatchlist,
@@ -288,4 +322,9 @@ module.exports = {
   supprimerPresences,
   getPresenceCount,
   getPresenceList,
+  // votes des Séances programmées
+  setVote,
+  getVote,
+  majVote,
+  listVotesOuverts,
 };

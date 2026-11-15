@@ -147,7 +147,7 @@ async function choisirEpisodes(interaction, message, tmdbId) {
  * sondage), choix de la saison et des épisodes diffusés, puis du jour (3
  * prochaines semaines, comme la Séance Libre) et de l'heure, publiée dans le
  * salon dédié (CINE_CLUB_CHANNEL_SERIE_ID) où les gens s'inscrivent via "Je
- * serai présent" comme pour une séance à l'arrache. Relancée chaque semaine
+ * serai présent" comme pour une Séance Libre. Relancée chaque semaine
  * avec les nouveaux épisodes.
  * `clicBouton` est le clic du menu principal /cine qui déclenche l'ouverture
  * de la modale de recherche — il ne doit pas avoir été deferUpdate() avant.
@@ -217,7 +217,7 @@ async function runSeriesWizard(interaction, clicBouton, message) {
     console.error("[SEANCES-CINE] Impossible de créer l'événement Discord natif :", err);
   }
 
-  const roleId = config.cineClub.roles.seancesSerie;
+  const roleId = config.cineClub.roles.seancesCine;
   const mention = roleId ? `<@&${roleId}> ` : '';
   const sessionKey = `${fiche.mediaType}:${fiche.tmdbId}:${dateSeance.getTime()}`;
 

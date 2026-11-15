@@ -14,6 +14,7 @@ const {
   handlePresenceButton,
   handleStartEventButton,
 } = require('./service');
+const { handleCloreVoteButton, demarrerSchedulerVotes, PREFIXE_CLORE } = require('./wizards/seances-programmees');
 
 module.exports = {
   name: 'cine-club',
@@ -26,12 +27,12 @@ module.exports = {
   buttons: [
     { prefix: 'cine_presence', execute: handlePresenceButton },
     { prefix: 'cine_start_event', execute: handleStartEventButton },
+    // "Clôturer le vote" sur les sondages des Séances programmées.
+    { prefix: PREFIXE_CLORE, execute: handleCloreVoteButton },
   ],
 
-  // Démarre la boucle qui vérifie chaque minute les rappels (H-1) programmés par
-  // les branches "Séances Séries" et "Séance Libre" de
-  // /cine ("Séance à l'arrache" n'en programme aucun, c'est une annonce
-  // immédiate). Les rappels survivent à un restart car ils sont persistés en
+  // Démarre la boucle qui vérifie chaque minute les rappels (H-1) des
+  // séances annoncées par /cine. Les rappels survivent à un restart car ils sont persistés en
   // JSON — au redémarrage, ceux déjà passés sont envoyés au premier tick
   // (max 60s de retard), ceux futurs attendent leur heure.
   //
@@ -44,5 +45,7 @@ module.exports = {
     demarrerSchedulerRappels(client);
     demarrerSchedulerProgramme(client);
     demarrerSchedulerRappelHebdo(client);
+    // Quatrième tick : clôture automatique des votes des Séances programmées.
+    demarrerSchedulerVotes(client);
   },
 };

@@ -154,6 +154,34 @@ pas `le mot interdit`) pour rester compatible partout (shell, CLI, etc.).
 - Dépendance ajoutée : [`jimp`](https://www.npmjs.com/package/jimp) (pur JS,
   pas de binaire natif à compiler) pour la pixélisation des affiches.
 
+## Séances Ciné — `/cine`
+
+Commande unique (admin ou rôle streamer, salon `CINE_CLUB_CHANNEL_ID`) qui
+ouvre un formulaire à boutons. Toutes les annonces et sondages mentionnent
+le seul rôle `CINE_CLUB_ROLE_SEANCES_CINE_ID`.
+
+- **📊 Séances programmées** (`wizards/seances-programmees.js`) : le
+  streamer coche les jours à proposer (parmi les 3 prochaines semaines,
+  10 max) puis les films de la watchlist (10 max), vérifie le récapitulatif
+  et publie dans `CINE_CLUB_CHANNEL_ID` des sondages Discord natifs à
+  plusieurs réponses : jours, horaires (19h30 / 20h / 20h30 / 21h / 21h30)
+  et films. Un seul jour ou un seul film coché : pas de sondage pour
+  celui-ci, il est annoncé dans le message d'introduction (avec la fiche
+  TMDB pour le film). Le streamer choisit aussi le salon vocal de diffusion.
+  Le bot a besoin de la permission « Créer des sondages ».
+- **Fin des votes** : automatique la veille du premier jour proposé à 20h,
+  ou plus tôt via le bouton **🔒 Clôturer le vote** du message
+  d'introduction (admin ou rôle streamer). Le bot arrête les sondages,
+  compte les votants de chaque réponse (égalité : la première de la liste,
+  donc le jour et l'horaire les plus tôt) et publie la séance gagnante comme
+  une Séance Libre : carte séance dans `CINE_CLUB_CHANNEL_ID`, event Discord,
+  rappel H-1 et programme en image mis à jour. Sans aucun vote, pas de
+  séance. Les votes en cours sont persistés (`data-store/cine-club-votes.json`)
+  et clos au premier tick après un redémarrage s'ils sont échus.
+- **📺 Séances Séries**, **🗓️ Séance Libre** (à partir d'aujourd'hui) :
+  publient directement l'annonce de la séance (fiche, event Discord,
+  rappel H-1, programme en image).
+
 ## Séances Ciné — programme en image
 
 - Une image façon programme de cinéma grindhouse liste toutes les séances

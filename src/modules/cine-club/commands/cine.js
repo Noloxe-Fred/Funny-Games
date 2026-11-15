@@ -4,12 +4,12 @@ const { requireStreamerRole, requireChannel } = require('../../../core/permissio
 const withErrorHandling = require('../../../core/withErrorHandling');
 const { attendreClic } = require('../service');
 const { runSeriesWizard } = require('../wizards/series');
-const { runArracheWizard } = require('../wizards/arrache');
 const { runSeanceLibreWizard } = require('../wizards/seance-libre');
+const { runSeancesProgrammeesWizard } = require('../wizards/seances-programmees');
 
 const CHOIX = [
+  { customId: 'cine_menu_programmees', label: '📊 Séances programmées', style: ButtonStyle.Success },
   { customId: 'cine_menu_series', label: '📺 Séances Séries', style: ButtonStyle.Primary },
-  { customId: 'cine_menu_arrache', label: "🔥 Séance à l'arrache", style: ButtonStyle.Danger },
   { customId: 'cine_menu_libre', label: '🗓️ Séance Libre', style: ButtonStyle.Secondary },
 ];
 
@@ -43,14 +43,15 @@ module.exports = {
       return interaction.editReply({ content: '⌛ Temps écoulé, /cine annulé.', components: [] });
     }
 
-    // Les branches "Séances Séries" et "à l'arrache" ouvrent une modale dès
-    // leur première étape : le clic ne doit surtout pas être deferUpdate()
+    // La branche "Séances Séries" ouvre une modale dès
+    // sa première étape : le clic ne doit surtout pas être deferUpdate()
     // avant (une modale doit être la toute première réponse à son
     // interaction).
     if (clic.customId === 'cine_menu_series') return runSeriesWizard(interaction, clic, message);
-    if (clic.customId === 'cine_menu_arrache') return runArracheWizard(interaction, clic, message);
 
     await clic.deferUpdate();
 
-    if (clic.customId === 'cine_menu_libre') return runSeanceLibreWizard(interaction, message);  }, 'SEANCES-CINE-CINE'),
+    if (clic.customId === 'cine_menu_libre') return runSeanceLibreWizard(interaction, message);
+    if (clic.customId === 'cine_menu_programmees') return runSeancesProgrammeesWizard(interaction, message);
+  }, 'SEANCES-CINE-CINE'),
 };

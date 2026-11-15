@@ -30,9 +30,12 @@ const COMMANDES = [
     nom: '/cine',
     acces: 'Admin ou rôle streamer, salon Séances Ciné uniquement',
     description:
-      'Point d\'entrée unique pour organiser une séance, avec 3 branches qui publient directement : Séances Séries ' +
-      '(recherche TMDB, choix de la saison et des épisodes diffusés, jour au choix sur les 3 prochaines semaines, heure libre), ' +
-      'Séance à l\'arrache (ce soir) et Séance Libre (jour au choix sur les 3 prochaines semaines, heure libre, watchlist ou TMDB).',
+      'Point d\'entrée unique pour organiser une séance. Séances programmées : sondages (plusieurs réponses) sur les jours ' +
+      'choisis parmi les 3 prochaines semaines, l\'horaire (19h30 à 21h30) et les films cochés dans la watchlist ; à la fin ' +
+      'des votes (ou bouton « Clôturer le vote »), la séance gagnante est publiée automatiquement. ' +
+      'Les 2 autres branches publient directement : Séances Séries ' +
+      '(recherche TMDB, choix de la saison et des épisodes diffusés, jour au choix sur les 3 prochaines semaines, heure libre) ' +
+      'et Séance Libre (jour au choix à partir d\'aujourd\'hui et sur les 3 prochaines semaines, heure libre, watchlist ou TMDB).',
   },
   {
     nom: '/supprimer-seance',

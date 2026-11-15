@@ -36,16 +36,11 @@ const OPTIONAL = [
   // --- Séances Ciné ---
   'TMDB_API_KEY',
   'CINE_CLUB_CHANNEL_ID',
-  'CINE_CLUB_CHANNEL_ARRACHE_ID',
   'CINE_CLUB_CHANNEL_SERIE_ID',
   'CINE_CLUB_CHANNEL_PROGRAMME_ID',
   'CINE_CLUB_CHANNEL_DISCUTE_ID',
   'CINE_CLUB_STREAMER_ROLE_ID',
   'CINE_CLUB_ROLE_SEANCES_CINE_ID',
-  'CINE_CLUB_ROLE_CINE_CLASSIQUES_ID',
-  'CINE_CLUB_ROLE_COURTS_METRAGES_ID',
-  'CINE_CLUB_ROLE_SEANCES_SERIE_ID',
-  'CINE_CLUB_ROLE_ARRACHE_ID',
   // --- Stream jeux vidéo ---
   'TWITCH_CLIENT_ID',
   'TWITCH_CLIENT_SECRET',
@@ -108,7 +103,6 @@ module.exports = {
     // Salons d'annonce dédiés : si non configurés, on retombe sur channelId
     // (comportement d'origine). channelId reste aussi le salon où /cine doit
     // être lancée (requireChannel).
-    channelArracheId: process.env.CINE_CLUB_CHANNEL_ARRACHE_ID || null,
     channelSerieId: process.env.CINE_CLUB_CHANNEL_SERIE_ID || null,
     // Salon où le programme en image est affiché et tenu à jour.
     channelProgrammeId: process.env.CINE_CLUB_CHANNEL_PROGRAMME_ID || null,
@@ -117,10 +111,6 @@ module.exports = {
     streamerRoleId: process.env.CINE_CLUB_STREAMER_ROLE_ID || null,
     roles: {
       seancesCine: process.env.CINE_CLUB_ROLE_SEANCES_CINE_ID || null,
-      cineClassiques: process.env.CINE_CLUB_ROLE_CINE_CLASSIQUES_ID || null,
-      courtsMetrages: process.env.CINE_CLUB_ROLE_COURTS_METRAGES_ID || null,
-      seancesSerie: process.env.CINE_CLUB_ROLE_SEANCES_SERIE_ID || null,
-      arrache: process.env.CINE_CLUB_ROLE_ARRACHE_ID || null,
     },
   },
 

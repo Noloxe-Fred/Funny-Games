@@ -31,7 +31,7 @@ obligatoires, le reste optionnel (le bot démarre avec des warnings si absent).
 
 Modules existants : `moderation` (purge/addpurge), `quiz` (quiz-affiche-floutée,
 pixélisation Jimp + TMDB), `cine-club` (« Séances Ciné » côté Discord ; commande unique `/cine` — formulaire à
-boutons vers 3 branches : Séances Séries, Séance à l'arrache, Séance Libre ;
+boutons vers 3 branches : Séances programmées (sondages jours/horaires/films, séance gagnante publiée à la clôture), Séances Séries, Séance Libre ; un seul rôle mentionné ;
 logique de chaque branche dans
 `src/modules/cine-club/wizards/`, intégration TMDB), `letterboxd`, `rss-feed`
 (`/rss ajouter|liste|supprimer|tester`, flux RSS/Atom en carte Components V2 : image à la une
