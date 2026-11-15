@@ -184,7 +184,9 @@ le seul rôle `CINE_CLUB_ROLE_SEANCES_CINE_ID`.
 
 ## Séances Ciné — programme en image
 
-- Une image façon programme de cinéma grindhouse liste toutes les séances
+- Une image façon affiche d'horreur (identité « Chair » de Funny Games : en-tête
+  en chair veinée avec globes oculaires baveux et titre qui saigne, fiches
+  séance sérigraphiées avec ticket de date à liseré vert fluo) liste toutes les séances
   annoncées (toutes branches de `/cine`) et les streams de `/stream` pas encore
   commencés : affiche, type Film/Série/Jeu vidéo, année, titre, synopsis tronqué, date et heure. Affichée
   dans `CINE_CLUB_CHANNEL_PROGRAMME_ID`.
@@ -221,7 +223,7 @@ le seul rôle `CINE_CLUB_ROLE_SEANCES_CINE_ID`.
   [`@napi-rs/canvas`](https://www.npmjs.com/package/@napi-rs/canvas), binaire
   précompilé, aucune dépendance système ; `service.js` publication ;
   `rappel-hebdo.js` rappel du dimanche ; polices
-  Anton, Creepster et Special Elite dans `fonts/`). État persistant :
+  Anton, Nosifer, Space Mono et Outfit dans `fonts/`, licence OFL). État persistant :
   `data-store/cine-club-programme.json`.
 
 ## Letterboxd
