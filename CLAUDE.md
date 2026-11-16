@@ -21,7 +21,8 @@ obligatoires, le reste optionnel (le bot démarre avec des warnings si absent).
 - `src/config/index.js` : lecture + validation des env vars, force `TZ=Europe/Paris`.
 - `src/core/` : `commandRegistry` (charge `src/modules/*` en Map), `eventHandler`
   (branche les listeners), `deployCommands`, `permissions.requireAdmin()`,
-  `withErrorHandling()` (wrapper try/catch générique).
+  `withErrorHandling()` (wrapper try/catch générique). Une commande peut
+  exporter `autocomplete(interaction)` pour ses options autocomplétées.
 - `src/data/jsonStore.js` : persistance JSON générique (écriture atomique),
   fichiers générés dans `data-store/` (jamais versionné).
 - `src/modules/<feature>/` : **une fonctionnalité = un dossier**, avec
@@ -35,7 +36,11 @@ boutons vers 3 branches : Séances programmées (sondages jours/horaires/films, 
 logique de chaque branche dans
 `src/modules/cine-club/wizards/`, intégration TMDB), `letterboxd`, `rss-feed`
 (`/rss ajouter|liste|supprimer|tester`, flux RSS/Atom en carte Components V2 : image à la une
-via `og:image` + galerie des images de l'article, alternative à MonitoRSS), `stream` (`/stream`, annonce de stream Twitch, jeux via Steam en français + IGDB optionnel, affichés au programme de `cine-club` ; réutilise les étapes de formulaire, présences et rappels de `cine-club`), `forbidden-word` (stub
+via `og:image` + galerie des images de l'article, alternative à MonitoRSS), `stream` (`/stream`, annonce de stream Twitch, jeux via Steam en français + IGDB optionnel, affichés au programme de `cine-club` ; réutilise les étapes de formulaire, présences et rappels de `cine-club`), `quel-monstre` (`/quiz-monstre` « Quel monstre es-tu ? » : 13 questions
+1-10 en menus déroulants éphémères, monstre le plus proche par distance euclidienne
+attribué en rôle Discord ; résultats non persistés, rôles = source de vérité ;
+monstres stockés dans `data-store/` et identifiés par l'ID de leur rôle :
+liste initiale importée par `/quiz-monstre-init`, puis `/quiz-monstre-ajouter|supprimer`), `forbidden-word` (stub
 vide, pas encore implémenté).
 
 ## Conventions

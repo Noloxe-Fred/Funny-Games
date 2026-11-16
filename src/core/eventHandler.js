@@ -32,6 +32,19 @@ module.exports = (client) => {
       return command.execute(interaction);
     }
 
+    // Autocomplétion des options de slash command : la commande la gère si
+    // elle exporte une fonction `autocomplete(interaction)`.
+    if (interaction.isAutocomplete()) {
+      const command = commands.get(interaction.commandName);
+      if (typeof command?.autocomplete !== 'function') return;
+      try {
+        await command.autocomplete(interaction);
+      } catch (err) {
+        console.error(`[HANDLER] Erreur autocomplétion /${interaction.commandName} :`, err);
+      }
+      return;
+    }
+
     // Boutons persistants (ex: "Je serai présent") : dispatch par préfixe de
     // customId ("cine_presence:xyz" -> "cine_presence"). Les boutons de
     // formulaire éphémères (/cine...) sont gérés directement par

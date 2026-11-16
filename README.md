@@ -68,6 +68,19 @@ src/
       commands/
         stream.js
         supprimer-stream.js
+    quel-monstre/             # quiz « Quel monstre es-tu ? » (/quiz-monstre), résultat = rôle Discord
+      index.js                  # manifeste + vérification de la config au démarrage
+      service.js                 # distance, départage, gestion des monstres et des rôles
+      store.js                    # monstres enregistrés, identifiés par leur rôle (quel-monstre-monstres)
+      data/
+        monstres-initiaux.js      # liste initiale, importée une seule fois par l'init
+        questions.js              # 13 questions
+      commands/
+        quiz-monstre.js
+        quiz-monstre-init.js
+        quiz-monstre-ajouter.js
+        quiz-monstre-supprimer.js  # avec autocomplétion
+        commun.js                  # utilitaire partagé (pas une commande)
     forbidden-word/           # stub, prêt à implémenter
       index.js
 ```
@@ -318,3 +331,56 @@ sur le modèle de la branche « Séance Libre » de `/cine`.
 - **IGDB** (optionnel) : complète les résultats avec ces jeux, résumé en anglais.
   Actif si `TWITCH_CLIENT_ID` et `TWITCH_CLIENT_SECRET` sont renseignés (application
   Twitch).
+
+## Quel monstre es-tu ? — `/quiz-monstre`
+
+Le joueur répond à 13 questions (échelle 1 à 10, une question par message
+éphémère, menu déroulant à 10 options) et reçoit le monstre dont le profil
+est le plus proche, sous forme de **rôle Discord**.
+
+### Gestion des monstres (admins)
+
+Les monstres sont enregistrés par le bot dans
+`data-store/quel-monstre-monstres.json` (à ne pas modifier à la main),
+chacun identifié par l'**ID de son rôle Discord**.
+
+- **`/quiz-monstre-init`** : la première fois, importe la liste de
+  `data/monstres-initiaux.js` et crée un rôle par monstre. Ensuite, ne
+  fait que recréer les rôles supprimés par erreur (le fichier n'est plus
+  relu). Sans risque de doublon, peut être relancée après un échec.
+- **`/quiz-monstre-ajouter nom profil description [couleur]`** : crée le
+  rôle et enregistre le monstre. `profil` = 13 notes de 1 à 10 dans
+  l'ordre des questions, séparées par des espaces ou des virgules
+  (`5 3 8 1 10 4 6 2 7 9 3 5 8`). `couleur` au format `#8b0000`. La
+  réponse affiche le profil aligné sur chaque question pour vérification,
+  et prévient si un autre monstre a exactement le même profil.
+- **`/quiz-monstre-supprimer monstre`** (autocomplétion) : demande
+  confirmation, puis retire le monstre du quiz en supprimant son rôle ou en
+  le gardant comme rôle ordinaire. Ses membres pourront repasser le quiz.
+- **Nom et couleur** : directement dans les paramètres des rôles Discord.
+  Le quiz affiche toujours le nom actuel du rôle.
+
+Après chaque modification, la configuration est revérifiée : si un rôle
+monstre a disparu ou si aucun monstre n'est enregistré, `/quiz-monstre`
+refuse de se lancer et l'admin voit pourquoi. Les problèmes de permission
+(Gérer les rôles, rôle du bot sous les rôles monstres) sont signalés et
+revérifiés à chaque attribution. Les rôles créés par le bot sont placés en
+bas de la hiérarchie, donc sous le sien.
+
+### Attribution
+
+- Distance euclidienne entre les réponses et chaque profil ; la plus petite
+  l'emporte. En cas d'égalité (à `MARGE` près, 0 par défaut, dans
+  `service.js`) : le rôle le moins peuplé, puis tirage au hasard. Les
+  membres ne sont récupérés (`guild.members.fetch()`, intent **Server
+  Members** requis) qu'en cas d'égalité.
+- Compatibilité affichée : `1 - distance / distanceMax`, avec
+  distanceMax = √(13 × 81).
+- **Résultats non persistés** : « a déjà joué » = possède un rôle monstre.
+  `/quiz-monstre` rappelle alors son monstre au joueur sans relancer le
+  quiz. Pour faire rejouer quelqu'un, un admin lui retire son rôle à la main.
+  Le rôle est revérifié juste avant l'attribution.
+- **Sessions** : en mémoire vive, un seul quiz à la fois par joueur,
+  5 minutes par question avant abandon (le joueur peut alors recommencer).
+- **Questions** : `data/questions.js`. En ajouter une après le lancement
+  invaliderait tous les profils (il en faut une valeur par question).
