@@ -398,5 +398,5 @@ build), indépendante du bot et hébergée sur Netlify.
 - **Netlify** : relier le repo, *Base directory* = `site`, pas de commande de
   build. Netlify ne redéploie que si `site/` change.
 - Invitation Discord : `https://discord.gg/XUqFJ8y8D4`.
-- **À renseigner** : le domaine (`https://funny-games.netlify.app/`) dans `index.html`,
-  `robots.txt` et `sitemap.xml`.
+- Adresse : `https://funny-games-discord.netlify.app/`, à reporter dans `index.html`,
+  `robots.txt` et `sitemap.xml` si elle change.
