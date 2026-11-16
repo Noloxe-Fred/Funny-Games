@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const config = require('../../../config');
-const { requireStreamerRole, requireChannel } = require('../../../core/permissions');
+const { requireStreamerRole } = require('../../../core/permissions');
 const withErrorHandling = require('../../../core/withErrorHandling');
 const { attendreClic } = require('../service');
 const { runSeriesWizard } = require('../wizards/series');
@@ -19,8 +18,9 @@ module.exports = {
     .setDescription('Point d\'entrée unique pour organiser une Séance Ciné'),
 
   execute: withErrorHandling(async (interaction) => {
+    // Utilisable dans n'importe quel salon : l'accès est déjà limité par le
+    // rôle, et les annonces partent de toute façon dans les salons configurés.
     if (!(await requireStreamerRole(interaction))) return;
-    if (!(await requireChannel(interaction, config.cineClub.channelId, { label: 'le salon Séances Ciné' }))) return;
 
     await interaction.deferReply({ ephemeral: true });
     const message = await interaction.editReply({

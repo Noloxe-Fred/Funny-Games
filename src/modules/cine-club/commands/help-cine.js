@@ -28,7 +28,7 @@ const COMMANDES = [
   },
   {
     nom: '/cine',
-    acces: 'Admin ou rôle streamer, salon Séances Ciné uniquement',
+    acces: 'Admin ou rôle streamer, tout salon',
     description:
       'Point d\'entrée unique pour organiser une séance. Séances programmées : sondages (plusieurs réponses) sur les jours ' +
       'choisis parmi les 3 prochaines semaines, l\'horaire (19h30 à 21h30) et les films cochés dans la watchlist ; à la fin ' +
@@ -70,7 +70,7 @@ module.exports = {
       t.setContent(
         '# 🎬 Commandes des Séances Ciné\n' +
           'Watchlist ouverte à tout le monde. `/cine` est réservée aux admins et au rôle streamer, ' +
-          'dans le salon Séances Ciné dédié.'
+          'utilisable depuis n\'importe quel salon.'
       )
     );
 

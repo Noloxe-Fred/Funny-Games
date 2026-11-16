@@ -101,8 +101,8 @@ module.exports = {
   cineClub: {
     channelId: process.env.CINE_CLUB_CHANNEL_ID || null,
     // Salons d'annonce dédiés : si non configurés, on retombe sur channelId
-    // (comportement d'origine). channelId reste aussi le salon où /cine doit
-    // être lancée (requireChannel).
+    // (comportement d'origine). /cine peut être lancée depuis n'importe quel
+    // salon : les annonces partent toujours dans ces salons configurés.
     channelSerieId: process.env.CINE_CLUB_CHANNEL_SERIE_ID || null,
     // Salon où le programme en image est affiché et tenu à jour.
     channelProgrammeId: process.env.CINE_CLUB_CHANNEL_PROGRAMME_ID || null,
