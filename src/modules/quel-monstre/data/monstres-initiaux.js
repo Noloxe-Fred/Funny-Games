@@ -46,7 +46,7 @@ module.exports = [
   {
     nom: 'Jigsaw',
     description: 'TODO Description de Jigsaw.',
-    couleur: 0x4F7942, // filtre vert de Saw
+    couleur: 0xB3001B, // robe rouge
     profil: [2, 5, 4, 2, 6, 4, 1, 1, 9, 9, 7, 4, 10],
   },
   {
@@ -106,7 +106,7 @@ module.exports = [
   {
     nom: 'Buddy',
     description: 'TODO Description de Buddy.',
-    couleur: 0x3FA9F5, // bleu vif
+    couleur: 0xFFA040, // fourrure orange
     profil: [3, 1, 3, 10, 9, 1, 8, 8, 2, 5, 1, 5, 8],
   },
   {
@@ -124,13 +124,13 @@ module.exports = [
   {
     nom: 'Niki',
     description: 'TODO Description de Niki.',
-    couleur: 0xB57EDC, // lavande
+    couleur: 0x8E2C2C, // haut rayé rouge et noir
     profil: [3, 6, 3, 7, 7, 1, 1, 9, 2, 9, 10, 5, 6],
   },
   {
     nom: 'Pazuzu',
     description: 'TODO Description de Pazuzu.',
-    couleur: 0x8A7F5A, // pierre de la statue
+    couleur: 0xC9C5B9, // teint cadavérique
     profil: [6, 3, 2, 2, 8, 5, 9, 4, 4, 8, 2, 4, 9],
   },
   {

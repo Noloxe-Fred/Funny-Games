@@ -218,11 +218,18 @@ async function attribuerRole(member, monstre) {
   }
 }
 
+/**
+ * Crée le rôle d'un monstre : affiché séparément dans la liste des membres,
+ * et placé tout en bas de la hiérarchie. Pas besoin de `position` : Discord
+ * crée tout nouveau rôle juste au-dessus de @everyone, donc créer les monstres
+ * dans l'ordre de la liste les range de haut en bas dans ce même ordre.
+ * Ensuite, position et affichage se gèrent dans les paramètres des rôles.
+ */
 function creerRole(guild, { nom, couleur }) {
   return guild.roles.create({
     name: nom,
     ...(couleur != null ? { colors: { primaryColor: couleur } } : {}),
-    hoist: false,
+    hoist: true,
     mentionable: false,
     permissions: [],
     reason: RAISON_AUDIT,
