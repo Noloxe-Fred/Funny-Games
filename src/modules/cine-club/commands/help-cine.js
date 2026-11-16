@@ -7,7 +7,7 @@ const COMMANDES = [
   {
     nom: '/search titre',
     acces: 'Tout le monde, tout salon',
-    description: 'Cherche un film ou une série sur TMDB et affiche sa fiche.',
+    description: 'Cherche un film ou une série sur TMDB et affiche sa fiche, avec un bouton pour l\'ajouter à la watchlist.',
   },
   {
     nom: '/add titre',

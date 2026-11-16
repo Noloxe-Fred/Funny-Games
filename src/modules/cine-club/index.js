@@ -13,6 +13,8 @@ const {
   demarrerSchedulerRappels,
   handlePresenceButton,
   handleStartEventButton,
+  handleAjoutWatchlistButton,
+  PREFIXE_AJOUT_WATCHLIST,
 } = require('./service');
 const { handleCloreVoteButton, demarrerSchedulerVotes, PREFIXE_CLORE } = require('./wizards/seances-programmees');
 
@@ -29,6 +31,8 @@ module.exports = {
     { prefix: 'cine_start_event', execute: handleStartEventButton },
     // "Clôturer le vote" sur les sondages des Séances programmées.
     { prefix: PREFIXE_CLORE, execute: handleCloreVoteButton },
+    // "Ajouter à la watchlist" sur les fiches /search.
+    { prefix: PREFIXE_AJOUT_WATCHLIST, execute: handleAjoutWatchlistButton },
   ],
 
   // Démarre la boucle qui vérifie chaque minute les rappels (H-1) des

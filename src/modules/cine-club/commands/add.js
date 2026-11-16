@@ -14,26 +14,8 @@ const {
   choisirResultatTmdb,
   doublonWatchlist,
   doublonHistorique,
+  construireEntreeWatchlist,
 } = require('../service');
-
-function construireEntreeWatchlist(fiche, interaction) {
-  return {
-    tmdbId: fiche.tmdbId,
-    mediaType: fiche.mediaType,
-    titre: fiche.titre,
-    posterUrl: fiche.posterUrl,
-    voteAverage: fiche.voteAverage,
-    duree: fiche.duree,
-    genres: fiche.genres,
-    dateAjout: new Date().toISOString(),
-    proposePar: {
-      id: interaction.user.id,
-      tag: interaction.user.tag,
-      // Pseudo serveur si dispo, sinon nom d'affichage global du compte.
-      displayName: interaction.member?.displayName ?? interaction.user.displayName,
-    },
-  };
-}
 
 module.exports = {
   data: new SlashCommandBuilder()

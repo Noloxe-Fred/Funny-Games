@@ -88,7 +88,7 @@ function libelleEpisodesCourt({ saison, liste }) {
  * Carte "fiche" Components V2 — utilisée par /search et /add pour afficher
  * un film/série unique. Remplace l'ancien embedFiche().
  */
-function buildFicheContainer(fiche) {
+function buildFicheContainer(fiche, { boutonWatchlist = null } = {}) {
   const couleur = fiche.mediaType === 'tv' ? COULEUR_SERIE : COULEUR_FILM;
   const container = new ContainerBuilder().setAccentColor(couleur);
 
@@ -108,13 +108,116 @@ function buildFicheContainer(fiche) {
 
   container.addTextDisplayComponents((t) => t.setContent(ligneStats(fiche) || 'Infos non disponibles.'));
 
-  container.addActionRowComponents((row) =>
-    row.addComponents(
+  container.addActionRowComponents((row) => {
+    // Bouton "Ajouter à la watchlist" optionnel (fiche /search) : 'actif'
+    // -> cliquable, 'ajoute' -> grisé une fois le titre dans la watchlist.
+    if (boutonWatchlist) row.addComponents(boutonAjoutWatchlist(fiche, { desactive: boutonWatchlist === 'ajoute' }));
+    return row.addComponents(
       new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel('Voir la fiche TMDB').setURL(tmdb.urlFiche(fiche))
-    )
-  );
+    );
+  });
 
   return container;
+}
+
+const PREFIXE_AJOUT_WATCHLIST = 'cine_watchlist_add';
+
+/**
+ * Bouton persistant "Ajouter à la watchlist" (customId
+ * `cine_watchlist_add:<mediaType>:<tmdbId>`) — dispatché par le registre,
+ * il reste donc fonctionnel après un redémarrage du bot.
+ */
+function boutonAjoutWatchlist(fiche, { desactive = false } = {}) {
+  return new ButtonBuilder()
+    .setCustomId(`${PREFIXE_AJOUT_WATCHLIST}:${fiche.mediaType}:${fiche.tmdbId}`)
+    .setStyle(desactive ? ButtonStyle.Secondary : ButtonStyle.Success)
+    .setLabel(desactive ? 'Dans la watchlist' : 'Ajouter à la watchlist')
+    .setEmoji(desactive ? '✅' : '➕')
+    .setDisabled(desactive);
+}
+
+/** Entrée watchlist construite à partir d'une fiche TMDB (/add et bouton /search). */
+function construireEntreeWatchlist(fiche, interaction) {
+  return {
+    tmdbId: fiche.tmdbId,
+    mediaType: fiche.mediaType,
+    titre: fiche.titre,
+    posterUrl: fiche.posterUrl,
+    voteAverage: fiche.voteAverage,
+    duree: fiche.duree,
+    genres: fiche.genres,
+    dateAjout: new Date().toISOString(),
+    proposePar: {
+      id: interaction.user.id,
+      tag: interaction.user.tag,
+      // Pseudo serveur si dispo, sinon nom d'affichage global du compte.
+      displayName: interaction.member?.displayName ?? interaction.user.displayName,
+    },
+  };
+}
+
+/**
+ * Handler du bouton "Ajouter à la watchlist" de la fiche /search. Mêmes
+ * règles que /add : doublon watchlist -> refus, déjà vu (historique) ->
+ * confirmation. Les réponses sont éphémères (n'importe qui peut cliquer
+ * sur la fiche publique) ; en cas d'ajout, la fiche d'origine est mise à
+ * jour (mention de l'ajout + bouton grisé).
+ */
+async function handleAjoutWatchlistButton(interaction) {
+  await interaction.deferReply({ ephemeral: true });
+
+  const [, mediaType, tmdbId] = interaction.customId.split(':');
+  const fiche = await tmdb.getDetails(tmdbId, mediaType);
+
+  const dejaEnWatchlist = doublonWatchlist(fiche);
+  if (dejaEnWatchlist) {
+    return interaction.editReply(
+      `❌ **${fiche.titre}** est déjà dans la watchlist — proposé par ` +
+        `**${dejaEnWatchlist.proposePar.displayName || dejaEnWatchlist.proposePar.tag}** le ${new Date(dejaEnWatchlist.dateAjout).toLocaleDateString('fr-FR')}.`
+    );
+  }
+
+  const dejaVu = doublonHistorique(fiche);
+  if (dejaVu) {
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder().setCustomId('wl_add_confirm').setLabel('Ajouter quand même').setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId('wl_add_cancel').setLabel('Annuler').setStyle(ButtonStyle.Secondary)
+    );
+    const reponse = await interaction.editReply({
+      content:
+        `⚠️ **${fiche.titre}** a déjà été vu le ${new Date(dejaVu.dateVu).toLocaleDateString('fr-FR')}. ` +
+        `L'ajouter quand même à la watchlist ?`,
+      components: [row],
+    });
+
+    let choix;
+    try {
+      choix = await reponse.awaitMessageComponent({ filter: (i) => i.user.id === interaction.user.id, time: 60_000 });
+    } catch {
+      return interaction.editReply({ content: '⌛ Temps écoulé, ajout annulé.', components: [] });
+    }
+    if (choix.customId === 'wl_add_cancel') {
+      return choix.update({ content: '❌ Ajout annulé.', components: [] });
+    }
+    await choix.deferUpdate();
+    // Un autre membre a pu l'ajouter pendant la confirmation.
+    if (doublonWatchlist(fiche)) {
+      return interaction.editReply({ content: `❌ **${fiche.titre}** vient d'être ajouté à la watchlist.`, components: [] });
+    }
+  }
+
+  const entree = store.addToWatchlist(construireEntreeWatchlist(fiche, interaction));
+  await interaction.editReply({ content: `✅ **${entree.titre}** ajouté à la watchlist.`, components: [] });
+
+  try {
+    const container = prependTextDisplay(
+      buildFicheContainer(fiche, { boutonWatchlist: 'ajoute' }),
+      `✅ **${entree.titre}** ajouté à la watchlist (proposé par ${entree.proposePar.displayName}).`
+    );
+    await interaction.message.edit({ flags: MessageFlags.IsComponentsV2, components: [container] });
+  } catch (err) {
+    console.error('[SEANCES-CINE] Impossible de mettre à jour la fiche /search :', err);
+  }
 }
 
 /**
@@ -818,4 +921,7 @@ module.exports = {
   demarrerSchedulerRappels,
   handlePresenceButton,
   handleStartEventButton,
+  construireEntreeWatchlist,
+  handleAjoutWatchlistButton,
+  PREFIXE_AJOUT_WATCHLIST,
 };

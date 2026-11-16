@@ -30,7 +30,8 @@ module.exports = {
     if (!choisi) return; // message d'erreur/timeout déjà posté par choisirResultatTmdb
 
     const fiche = await tmdb.getDetails(choisi.tmdbId, choisi.mediaType);
-    const container = buildFicheContainer(fiche);
+    // Bouton "Ajouter à la watchlist" (persistant, voir handleAjoutWatchlistButton).
+    const container = buildFicheContainer(fiche, { boutonWatchlist: 'actif' });
 
     await message.edit({ content: null, embeds: [], flags: MessageFlags.IsComponentsV2, components: [container] });
   }, 'SEANCES-CINE-SEARCH'),
