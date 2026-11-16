@@ -193,7 +193,7 @@ async function runSeriesWizard(interaction, clicBouton, message) {
   if (!annonceTexte) return; // message d'erreur/timeout déjà posté par demanderMessagePersonnalise
 
   const targetChannelId = config.cineClub.channelSerieId || config.cineClub.channelId;
-  const salonAnnonce = await interaction.guild.channels.fetch(targetChannelId);
+  const salonAnnonce = await interaction.guild.channels.fetch(targetChannelId).catch(() => null);
   if (!salonAnnonce) {
     return interaction.editReply({ content: `❌ Salon d'annonce introuvable (ID ${targetChannelId}).`, components: [] });
   }

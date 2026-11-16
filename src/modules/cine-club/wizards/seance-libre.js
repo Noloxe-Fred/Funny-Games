@@ -179,8 +179,9 @@ async function runSeanceLibreWizard(interaction, message) {
   });
   if (!annonceTexte) return; // message d'erreur/timeout déjà posté par demanderMessagePersonnalise
 
+  let channelId;
   try {
-    await publierSeanceFilm({
+    ({ channelId } = await publierSeanceFilm({
       guild: interaction.guild,
       tmdbId: elu.tmdbId,
       mediaType: elu.mediaType,
@@ -188,13 +189,13 @@ async function runSeanceLibreWizard(interaction, message) {
       salonVocalId,
       annonceTexte,
       source: 'libre',
-    });
+    }));
   } catch (err) {
     console.error('[SEANCES-CINE] Publication de la Séance Libre impossible :', err);
     return interaction.editReply({ content: `❌ ${err.message}`, components: [] });
   }
 
-  await interaction.editReply({ content: `✅ Annonce postée dans <#${targetChannelId}> !`, components: [] });
+  await interaction.editReply({ content: `✅ Annonce postée dans <#${channelId}> !`, components: [] });
 }
 
 module.exports = { runSeanceLibreWizard, publierSeanceFilm };
