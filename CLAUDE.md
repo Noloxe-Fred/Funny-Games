@@ -52,6 +52,10 @@ vide, pas encore implémenté).
 - `customId` des boutons/modals persistants : format `<prefix>:<reste>`,
   le préfixe sert de clé de dispatch O(1) dans le registry.
 
+## Site vitrine
+`site/` : page statique de présentation du serveur (Netlify, base directory
+`site`), sans lien avec le code du bot. Voir README.
+
 ## Pas de repo git pour l'instant
 Le dossier n'était pas encore versionné (au 2026-09-20). `.gitignore` déjà
 présent et correct (`node_modules/`, `.env`, `data-store/`, `npm-debug.log`).

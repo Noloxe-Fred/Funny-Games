@@ -384,3 +384,19 @@ bas de la hiérarchie, donc sous le sien.
   5 minutes par question avant abandon (le joueur peut alors recommencer).
 - **Questions** : `data/questions.js`. En ajouter une après le lancement
   invaliderait tous les profils (il en faut une valeur par question).
+
+## Site vitrine — `site/`
+
+Page de présentation du serveur, statique (HTML/CSS, aucune dépendance ni
+build), indépendante du bot et hébergée sur Netlify.
+
+- Identité « Chair » du programme ciné, allégée : fond sang séché à trame de
+  points, Nosifer pour les titres qui saignent, Anton, Space Mono, Outfit
+  (polices copiées depuis `cine-club/programme/fonts/`).
+- Référencement : `title`/`description`, balises Open Graph (`og-image.jpg`),
+  données structurées JSON-LD, `robots.txt`, `sitemap.xml`, une seule page `h1`.
+- **Netlify** : relier le repo, *Base directory* = `site`, pas de commande de
+  build. Netlify ne redéploie que si `site/` change.
+- Invitation Discord : `https://discord.gg/XUqFJ8y8D4`.
+- **À renseigner** : le domaine (`https://funny-games.netlify.app/`) dans `index.html`,
+  `robots.txt` et `sitemap.xml`.
