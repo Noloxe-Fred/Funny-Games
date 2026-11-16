@@ -338,6 +338,18 @@ Le joueur répond à 13 questions (échelle 1 à 10, une question par message
 éphémère, menu déroulant à 10 options) et reçoit le monstre dont le profil
 est le plus proche, sous forme de **rôle Discord**.
 
+Les questions restent privées, mais le **résultat est publié dans le salon**,
+visible par tous : nom du joueur, monstre, description, compatibilité,
+rôle et image du monstre. Le joueur ne voit en privé qu'une confirmation
+(et l'éventuel échec d'attribution du rôle). Si la publication échoue, le
+résultat lui est montré en privé à la place.
+
+Images : `data/images/<nom-du-monstre>.jpg` (ou `.png`, `.webp`, `.gif`),
+nom en kebab-case sans accents, d'après le nom **enregistré** du monstre
+(pas le nom actuel du rôle) : « Sorcière de Blair » → `sorciere-de-blair.jpg`.
+Un monstre sans image s'affiche simplement sans. Pour un monstre ajouté
+avec `/quiz-monstre-ajouter`, déposer son image sous ce nom dans le dossier.
+
 ### Gestion des monstres (admins)
 
 Les monstres sont enregistrés par le bot dans

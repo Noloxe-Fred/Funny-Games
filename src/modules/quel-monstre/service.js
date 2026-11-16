@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const { PermissionFlagsBits } = require('discord.js');
 const config = require('../../config');
 const monstresInitiaux = require('./data/monstres-initiaux');
@@ -62,6 +64,28 @@ function avecVerrou(operation) {
  */
 function nomAffiche(guild, monstre) {
   return (monstre.roleId && guild.roles.cache.get(monstre.roleId)?.name) || monstre.nom;
+}
+
+const DOSSIER_IMAGES = path.join(__dirname, 'data', 'images');
+
+/**
+ * Chemin de l'image du monstre, ou null s'il n'en a pas. Le fichier se nomme
+ * d'après le nom ENREGISTRÉ du monstre (pas celui du rôle, renommable) en
+ * kebab-case sans accents : « Sorcière de Blair » → sorciere-de-blair.jpg.
+ */
+function cheminImage(monstre) {
+  const base = String(monstre.nom ?? '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  if (!base) return null;
+  for (const ext of ['jpg', 'jpeg', 'png', 'webp', 'gif']) {
+    const chemin = path.join(DOSSIER_IMAGES, `${base}.${ext}`);
+    if (fs.existsSync(chemin)) return chemin;
+  }
+  return null;
 }
 
 /** Retrouve un monstre par l'ID de son rôle ou par son nom (insensible à la casse). */
@@ -474,6 +498,7 @@ module.exports = {
   monstres,
   etatConfiguration,
   nomAffiche,
+  cheminImage,
   trouverParRoleOuNom,
   lireProfil,
   lireCouleur,

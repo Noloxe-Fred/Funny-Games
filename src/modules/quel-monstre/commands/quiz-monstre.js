@@ -3,7 +3,9 @@ const {
   ActionRowBuilder,
   StringSelectMenuBuilder,
   EmbedBuilder,
+  AttachmentBuilder,
 } = require('discord.js');
+const path = require('path');
 const withErrorHandling = require('../../../core/withErrorHandling');
 const service = require('../service');
 
@@ -53,20 +55,32 @@ function vueQuestion(index) {
   };
 }
 
-function vueResultat(guild, { monstre, compatibilite }, avertissement) {
+/**
+ * Résultat PUBLIC, posté dans le salon : visible par tout le monde.
+ * Le rôle n'apparaît que s'il a bien été attribué (l'éventuelle erreur
+ * d'attribution reste dans le message éphémère du joueur).
+ */
+function vueResultat(membre, { monstre, compatibilite }, roleAttribue) {
+  const role = monstre.roleId ? membre.guild.roles.cache.get(monstre.roleId) : null;
   const embed = new EmbedBuilder()
-    .setColor(COULEUR)
-    .setTitle(`🩸 Vous êtes…${service.nomAffiche(guild, monstre)}`)
+    .setColor(role?.color || COULEUR)
+    .setAuthor({ name: membre.displayName, iconURL: membre.displayAvatarURL() })
+    .setTitle(`🩸 ${membre.displayName} est… ${service.nomAffiche(membre.guild, monstre)}`)
     .setDescription(monstre.description)
     .addFields({ name: 'Compatibilité', value: `**${compatibilite} %**`, inline: true });
 
-  if (avertissement) {
-    embed.addFields({ name: '⚠️ Rôle non attribué', value: avertissement });
-  } else {
-    embed.addFields({ name: 'Rôle', value: `<@&${monstre.roleId}>`, inline: true });
-  }
+  if (roleAttribue) embed.addFields({ name: 'Rôle', value: `<@&${monstre.roleId}>`, inline: true });
 
-  return { content: '', embeds: [embed], components: [] };
+  const files = [];
+  const image = service.cheminImage(monstre);
+  if (image) {
+    const nomFichier = `monstre${path.extname(image)}`;
+    files.push(new AttachmentBuilder(image, { name: nomFichier }));
+    embed.setImage(`attachment://${nomFichier}`);
+  }
+  embed.setFooter({ text: 'Et vous, quel monstre êtes-vous ? Lancez /quiz-monstre' });
+
+  return { content: '', embeds: [embed], files, allowedMentions: { parse: [] } };
 }
 
 /** Pose les questions une à une. Retourne { reponses, derniere } ou null si abandon. */
@@ -162,13 +176,29 @@ module.exports = {
         console.error(`[QUEL-MONSTRE] Rôle non attribué à ${interaction.user.tag} : ${erreur}.`);
       }
 
-      await derniere.editReply(
-        vueResultat(
-          interaction.guild,
-          trouve,
-          erreur ? `Le bot n'a pas pu vous donner votre rôle (${erreur}). Prévenez un admin.` : null
-        )
-      );
+      const avertissement = erreur
+        ? `\n⚠️ Le bot n'a pas pu vous donner votre rôle (${erreur}). Prévenez un admin.`
+        : '';
+
+      // Résultat public (followUp non éphémère : passe par le webhook de
+      // l'interaction, pas besoin de la permission d'écrire dans le salon).
+      // En cas d'échec, le joueur garde au moins son résultat en privé.
+      const vue = vueResultat(membre, trouve, !erreur);
+      try {
+        await derniere.followUp({ ...vue, ephemeral: false });
+        await derniere.editReply({
+          content: `✅ Votre résultat a été publié dans le salon.${avertissement}`,
+          embeds: [],
+          components: [],
+        });
+      } catch (err) {
+        console.error('[QUEL-MONSTRE] Publication du résultat impossible :', err);
+        await derniere.editReply({
+          ...vue,
+          content: `⚠️ Le résultat n'a pas pu être publié dans le salon, le voici en privé.${avertissement}`,
+          components: [],
+        });
+      }
     } finally {
       quizEnCours.delete(userId);
     }
