@@ -207,10 +207,12 @@ le seul rôle `CINE_CLUB_ROLE_SEANCES_CINE_ID`.
   dans `CINE_CLUB_CHANNEL_PROGRAMME_ID`.
 - Une image d'en-tête « Séances Ciné », puis une image par séance (toutes
   de même largeur et plus larges que hautes, donc affichées à la même
-  échelle par Discord, quel que soit le nombre de séances) — un message par
-  image, suivi
-  d'une petite ligne « Cliquez sur une image pour l'agrandir » (Discord
-  réduit les images dans le salon ; reposté si besoin pour rester en bas).
+  échelle par Discord, quel que soit le nombre de séances) — toutes
+  empilées dans **un seul message** Components V2 (une galerie d'une image
+  par bande, pour qu'elles restent en pleine largeur l'une sous l'autre),
+  terminé par une petite ligne « Cliquez sur une image pour l'agrandir ».
+  Discord limitant un message à 10 fichiers, au-delà de 9 séances les
+  images suivantes passent dans un 2ᵉ message.
   Le rappel hebdomadaire garde l'ancien découpage (4 séances sur la
   première image, 5 par image suivante) dans une seule galerie.
 - `/programme-cine` (Admin ou rôle Modo `MOD_ROLE_ID`) supprime les anciennes images
@@ -220,8 +222,10 @@ le seul rôle `CINE_CLUB_ROLE_SEANCES_CINE_ID`.
 - Ensuite, l'image est régénérée dès que la liste des séances à venir change :
   immédiatement quand une séance est annoncée (toutes les branches de `/cine`)
   ou supprimée (`/supprimer-seance`), et via un tick par minute pour le reste
-  (séance commencée, publication ratée). Mise à jour en **éditant**
-  les messages existants (ajout/suppression des images en plus ou en moins).
+  (séance commencée, publication ratée). Mise à jour en **éditant** le
+  message existant (les images sont remplacées, nouvelle séance insérée à sa
+  place chronologique). Un programme publié dans l'ancien format (un message
+  par image) est supprimé et republié au premier tick.
   Si un message a été supprimé à la main, tout est republié.
 - Rappel hebdomadaire : chaque **dimanche à 18h**, le programme en image est
   posté dans `CINE_CLUB_CHANNEL_DISCUTE_ID` (« la-discute ») avec mention de

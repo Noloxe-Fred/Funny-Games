@@ -182,7 +182,8 @@ function listAnnoncesAVenir(maintenant = Date.now()) {
 
 // --- Programme en image ---------------------------------------------------
 //
-// Messages postés dans le salon programme (un par image, dans l'ordre) et
+// Messages postés dans le salon programme (un seul, ou un par lot de 10
+// images, dans l'ordre), format de publication et
 // signature de la liste de séances affichée, pour ne régénérer l'image que
 // quand le programme change réellement.
 

@@ -1,8 +1,10 @@
 // Programme des Séances Ciné en image : liste toutes les séances annoncées
 // (cine-club-annonces) et les streams (stream-annonces) pas encore commencés, rendue en PNG (render.js) et
 // affichée dans CINE_CLUB_CHANNEL_PROGRAMME_ID — une image d'en-tête puis une
-// image par séance, un message par image, édités sur place à chaque
-// changement plutôt que reposter.
+// image par séance, empilées dans un seul message Components V2 (une galerie
+// d'une image par bande, donc pleine largeur, l'une sous l'autre), édité sur
+// place à chaque changement plutôt que reposté. Discord limite un message à
+// 10 fichiers : au-delà, les images suivantes passent dans un 2e message.
 //
 // Mise à jour automatique : chaque branche de /cine, /stream (et leurs
 // commandes de suppression) appelle rafraichirProgramme() dès la séance enregistrée, et un tick par
@@ -11,7 +13,13 @@
 // ne régénèrent que si elle a changé. Inactif tant que /programme-cine n'a
 // pas été lancée une première fois.
 
-const { AttachmentBuilder } = require('discord.js');
+const {
+  AttachmentBuilder,
+  MediaGalleryBuilder,
+  MediaGalleryItemBuilder,
+  MessageFlags,
+  TextDisplayBuilder,
+} = require('discord.js');
 const config = require('../../../config');
 const store = require('../store');
 const streamStore = require('../../stream/store');
@@ -20,8 +28,13 @@ const { rendreProgramme, rendreProgrammeParSeance } = require('./render');
 const INTERVALLE_MS = 60 * 1000;
 const TIMEOUT_AFFICHE_MS = 10 * 1000;
 // Discord réduit les images dans le salon : petite ligne sous la dernière
-// image pour inviter à cliquer (message à part, toujours le dernier).
+// image pour inviter à cliquer (dans le dernier message).
 const TEXTE_AGRANDIR = "-# 🔍 Cliquez sur une image pour l'agrandir";
+// Limite Discord de pièces jointes par message.
+const IMAGES_PAR_MESSAGE = 10;
+// Format des messages publiés : un état d'un autre format (ancienne version,
+// un message par image) est supprimé et republié.
+const FORMAT = 'galerie-v2';
 
 // Une publication bloquée (appel Discord qui ne répond jamais...) ne doit
 // pas geler la file indéfiniment : au-delà, la suivante passe quand même.
@@ -131,24 +144,43 @@ function piecesJointes(buffers) {
   return buffers.map((buf, i) => new AttachmentBuilder(buf, { name: `programme-seances-cine-${i + 1}.png` }));
 }
 
+// Contenu d'un message : ses images empilées (une galerie par image, pour
+// qu'elles s'affichent en pleine largeur et non en mosaïque), et la ligne
+// "Cliquez pour agrandir" sous la dernière image du programme.
+function contenuMessage(fichiers, dernier) {
+  const components = fichiers.map((f) =>
+    new MediaGalleryBuilder().addItems(new MediaGalleryItemBuilder().setURL(`attachment://${f.name}`))
+  );
+  if (dernier) components.push(new TextDisplayBuilder().setContent(TEXTE_AGRANDIR));
+  return { flags: MessageFlags.IsComponentsV2, components, files: fichiers };
+}
+
+function decouper(fichiers) {
+  const lots = [];
+  for (let i = 0; i < fichiers.length; i += IMAGES_PAR_MESSAGE) lots.push(fichiers.slice(i, i + IMAGES_PAR_MESSAGE));
+  return lots;
+}
+
 /**
  * Édite les messages existants dans l'ordre, poste ceux qui manquent,
  * supprime ceux en trop. Lève une erreur si un message existant n'est plus
  * éditable (supprimé à la main...) — l'appelant repart alors de zéro.
  */
 async function mettreAJourMessages(channel, anciensIds, fichiers) {
+  const lots = decouper(fichiers);
   const ids = [];
-  for (let i = 0; i < fichiers.length; i++) {
+  for (let i = 0; i < lots.length; i++) {
+    const contenu = contenuMessage(lots[i], i === lots.length - 1);
     if (anciensIds[i]) {
       const message = await channel.messages.fetch(anciensIds[i]);
-      await message.edit({ files: [fichiers[i]], attachments: [] });
+      await message.edit({ ...contenu, attachments: [] });
       ids.push(message.id);
     } else {
-      const message = await channel.send({ files: [fichiers[i]] });
+      const message = await channel.send(contenu);
       ids.push(message.id);
     }
   }
-  for (const id of anciensIds.slice(fichiers.length)) {
+  for (const id of anciensIds.slice(lots.length)) {
     await channel.messages.delete(id).catch(() => {});
   }
   return ids;
@@ -182,11 +214,10 @@ function publierProgramme(client, { forcer = false } = {}) {
 
     const etat = store.getProgramme();
     let anciensIds = etat.messageIds || [];
-    let texteId = etat.texteId || null;
-    if (forcer || etat.channelId !== channelId) {
-      await supprimerMessages(client, etat.channelId, [...anciensIds, texteId].filter(Boolean));
+    if (forcer || etat.channelId !== channelId || etat.format !== FORMAT) {
+      // texteId : ligne "Cliquez pour agrandir" de l'ancien format (message à part).
+      await supprimerMessages(client, etat.channelId, [...anciensIds, etat.texteId].filter(Boolean));
       anciensIds = [];
-      texteId = null;
     }
 
     let messageIds;
@@ -198,16 +229,7 @@ function publierProgramme(client, { forcer = false } = {}) {
       messageIds = await mettreAJourMessages(channel, [], piecesJointes(buffers));
     }
 
-    // La ligne "Cliquez pour agrandir" doit rester sous la dernière image :
-    // repostée si une image a été ajoutée après elle ou si elle a disparu.
-    const imageAjoutee = messageIds.some((id) => !anciensIds.includes(id));
-    const texteExiste = texteId && (await channel.messages.fetch(texteId).then(() => true, () => false));
-    if (imageAjoutee || !texteExiste) {
-      if (texteId) await channel.messages.delete(texteId).catch(() => {});
-      texteId = (await channel.send({ content: TEXTE_AGRANDIR })).id;
-    }
-
-    store.setProgramme({ channelId, messageIds, texteId, signature: signature(annonces) });
+    store.setProgramme({ channelId, format: FORMAT, messageIds, signature: signature(annonces) });
     return { seances: annonces.length, images: buffers.length };
   });
 }
@@ -222,7 +244,9 @@ function publierProgramme(client, { forcer = false } = {}) {
 async function rafraichirProgramme(client) {
   const etat = store.getProgramme();
   if (!etat.messageIds || etat.messageIds.length === 0) return false; // jamais lancé
-  if (signature(annoncesAuProgramme()) === etat.signature) return false;
+  // Ancien format (un message par image) : republié dans le nouveau dès le
+  // premier tick, même sans changement de séances.
+  if (etat.format === FORMAT && signature(annoncesAuProgramme()) === etat.signature) return false;
 
   try {
     await publierProgramme(client);
