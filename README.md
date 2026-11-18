@@ -63,6 +63,8 @@ src/
       jeux.js                    # recherche combinée : Steam puis IGDB
       steam.js                   # fiches en français (API boutique Steam, sans clé)
       igdb.js                    # optionnel : jeux absents de Steam (jeton Twitch)
+      twitch.js                  # jeton d'application Twitch + appels Helix (partagés)
+      live.js                    # alerte « en live » (vérification chaque minute)
       service.js                 # carte V2, boutons, rappel H-1
       store.js                    # annonces (stream-annonces)
       commands/
@@ -331,6 +333,14 @@ sur le modèle de la branche « Séance Libre » de `/cine`.
 - **IGDB** (optionnel) : complète les résultats avec ces jeux, résumé en anglais.
   Actif si `TWITCH_CLIENT_ID` et `TWITCH_CLIENT_SECRET` sont renseignés (application
   Twitch).
+- **Alerte « en live »** : chaque minute, le bot interroge l'API Twitch (Helix
+  `/streams`) pour les chaînes de `TWITCH_LIVE_LOGINS` (défaut `funny_games_discord`).
+  Dès qu'un live démarre, il publie une carte (« Le live démarre sur <jeu> ! », titre,
+  jaquette de la catégorie Twitch, aperçu, bouton « Regarder le live ») dans `TWITCH_LIVE_CHANNEL_ID` en mentionnant `TWITCH_LIVE_ROLE_ID`
+  (à défaut : `STREAM_CHANNEL_ID` / `STREAM_ROLE_ID`). L'id du dernier live annoncé
+  par chaîne est persisté (`stream-lives-annonces`) : pas de doublon après un
+  redémarrage. Nécessite `TWITCH_CLIENT_ID` / `TWITCH_CLIENT_SECRET`. Polling plutôt
+  qu'EventSub : pas d'URL publique ni de jeton utilisateur à gérer.
 
 ## Quel monstre es-tu ? — `/quiz-monstre`
 

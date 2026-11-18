@@ -36,7 +36,7 @@ boutons vers 3 branches : Séances programmées (sondages jours/horaires/films, 
 logique de chaque branche dans
 `src/modules/cine-club/wizards/`, intégration TMDB), `letterboxd`, `rss-feed`
 (`/rss ajouter|liste|supprimer|tester`, flux RSS/Atom en carte Components V2 : image à la une
-via `og:image` + galerie des images de l'article, alternative à MonitoRSS), `stream` (`/stream`, annonce de stream Twitch, jeux via Steam en français + IGDB optionnel, affichés au programme de `cine-club` ; réutilise les étapes de formulaire, présences et rappels de `cine-club`), `quel-monstre` (`/quiz-monstre` « Quel monstre es-tu ? » : 13 questions
+via `og:image` + galerie des images de l'article, alternative à MonitoRSS), `stream` (`/stream`, annonce de stream Twitch, jeux via Steam en français + IGDB optionnel, affichés au programme de `cine-club`, + alerte automatique quand un live Twitch démarre (`live.js`, polling Helix chaque minute) ; réutilise les étapes de formulaire, présences et rappels de `cine-club`), `quel-monstre` (`/quiz-monstre` « Quel monstre es-tu ? » : 13 questions
 1-10 en menus déroulants éphémères, monstre le plus proche par distance euclidienne
 attribué en rôle Discord ; résultats non persistés, rôles = source de vérité ;
 monstres stockés dans `data-store/` et identifiés par l'ID de leur rôle :

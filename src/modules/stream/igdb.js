@@ -2,11 +2,10 @@
 // jeux console et anciens absents de Steam.
 
 const config = require('../../config');
+const twitch = require('./twitch');
 
-const TOKEN_URL = 'https://id.twitch.tv/oauth2/token';
 const GAMES_URL = 'https://api.igdb.com/v4/games';
 const IMG_BASE = 'https://images.igdb.com/igdb/image/upload/t_cover_big_2x';
-const MARGE_EXPIRATION_MS = 60 * 1000;
 
 const CHAMPS = [
   'name',
@@ -21,59 +20,21 @@ const CHAMPS = [
   'involved_companies.company.name',
 ].join(',');
 
-// Jeton d'application Twitch, gardé en mémoire : il dure environ 60 jours et
-// s'obtient en un appel, inutile de le persister.
-let jeton = null;
-
-function estConfigure() {
-  return Boolean(config.igdb.clientId && config.igdb.clientSecret);
-}
-
-async function obtenirJeton() {
-  if (jeton && jeton.expireA > Date.now()) return jeton.valeur;
-
-  const { clientId, clientSecret } = config.igdb;
-  if (!clientId || !clientSecret) {
-    throw new Error(
-      "TWITCH_CLIENT_ID / TWITCH_CLIENT_SECRET ne sont pas définis dans .env — impossible d'interroger IGDB."
-    );
-  }
-
-  const url = new URL(TOKEN_URL);
-  url.searchParams.set('client_id', clientId);
-  url.searchParams.set('client_secret', clientSecret);
-  url.searchParams.set('grant_type', 'client_credentials');
-
-  const response = await fetch(url.toString(), { method: 'POST' });
-  if (!response.ok) {
-    throw new Error(`[IGDB] Erreur HTTP ${response.status} à l'obtention du jeton Twitch`);
-  }
-  const data = await response.json();
-  jeton = {
-    valeur: data.access_token,
-    expireA: Date.now() + data.expires_in * 1000 - MARGE_EXPIRATION_MS,
-  };
-  return jeton.valeur;
-}
+const estConfigure = twitch.estConfigure;
 
 async function igdbFetch(requete) {
-  const envoyer = async () =>
+  // IGDB s'authentifie avec le jeton d'application Twitch (voir twitch.js).
+  const response = await twitch.fetchAuthentifie((jeton) =>
     fetch(GAMES_URL, {
       method: 'POST',
       headers: {
-        'Client-ID': config.igdb.clientId,
-        Authorization: `Bearer ${await obtenirJeton()}`,
+        'Client-ID': config.twitch.clientId,
+        Authorization: `Bearer ${jeton}`,
         Accept: 'application/json',
       },
       body: requete,
-    });
-
-  let response = await envoyer();
-  // Jeton révoqué avant son expiration annoncée : on en redemande un, une fois.
-  if (response.status === 401) {
-    jeton = null;
-    response = await envoyer();
-  }
+    })
+  );
   if (!response.ok) {
     throw new Error(`[IGDB] Erreur HTTP ${response.status} sur /games`);
   }

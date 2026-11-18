@@ -115,9 +115,10 @@ module.exports = {
   },
 
   // --- Stream jeux vidéo ---
-  // Optionnel : identifiants d'une application Twitch, IGDB s'authentifie via
-  // Twitch. Sans eux, /stream ne cherche que sur Steam.
-  igdb: {
+  // Optionnel : identifiants d'une application Twitch, utilisés par IGDB et
+  // par l'alerte de live. Sans eux, /stream ne cherche que sur Steam et
+  // aucune alerte de live n'est envoyée.
+  twitch: {
     clientId: process.env.TWITCH_CLIENT_ID || null,
     clientSecret: process.env.TWITCH_CLIENT_SECRET || null,
   },
@@ -125,5 +126,16 @@ module.exports = {
   stream: {
     channelId: process.env.STREAM_CHANNEL_ID || null,
     roleId: process.env.STREAM_ROLE_ID || null,
+    // Alerte « en live » : chaînes Twitch surveillées (logins séparés par des
+    // virgules), salon et rôle mentionné. Salon et rôle retombent sur ceux
+    // des annonces /stream s'ils ne sont pas renseignés.
+    live: {
+      logins: (process.env.TWITCH_LIVE_LOGINS || 'funny_games_discord')
+        .split(',')
+        .map((login) => login.trim().toLowerCase())
+        .filter(Boolean),
+      channelId: process.env.TWITCH_LIVE_CHANNEL_ID || process.env.STREAM_CHANNEL_ID || null,
+      roleId: process.env.TWITCH_LIVE_ROLE_ID || process.env.STREAM_ROLE_ID || null,
+    },
   },
 };

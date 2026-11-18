@@ -1,6 +1,7 @@
 const stream = require('./commands/stream');
 const supprimerStream = require('./commands/supprimer-stream');
 const { handlePresenceButton, handleStartEventButton } = require('./service');
+const { demarrerSurveillanceLives } = require('./live');
 
 module.exports = {
   name: 'stream',
@@ -13,4 +14,10 @@ module.exports = {
     { prefix: 'stream_presence', execute: handlePresenceButton },
     { prefix: 'stream_start_event', execute: handleStartEventButton },
   ],
+
+  // Alerte « en live » : vérifie les chaînes Twitch surveillées chaque minute
+  // et publie une carte quand un live démarre (voir live.js).
+  init: (client) => {
+    demarrerSurveillanceLives(client);
+  },
 };
